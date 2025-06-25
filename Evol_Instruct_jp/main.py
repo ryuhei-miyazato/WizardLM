@@ -16,8 +16,8 @@ def initialize_models(model_name):
     model = AutoModelForCausalLM.from_pretrained(
         model_name, 
         device_map="auto", 
-        torch_dtype=torch.float16,
-        attn_implementation="flash_attention_2"
+        torch_dtype=torch.float32,
+        # attn_implementation="flash_attention_2"
     )
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     tokenizer.padding_side = 'left'
@@ -97,7 +97,7 @@ def parse_args():
     parser.add_argument(
         "--batch_size",
         type=int,
-        default=3,
+        default=1,
     )
     parser.add_argument(
         "--cuda_device",
