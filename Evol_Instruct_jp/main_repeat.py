@@ -74,7 +74,7 @@ def parse_args():
     parser.add_argument("--output_dir", type=str,required=True,)
     parser.add_argument("--seed_tasks_path", type=str, required=True, default="data/seed_tasks.jsonl",)
     parser.add_argument("--model_name", type=str)
-    parser.add_argument("--batch_size", type=int, default=10)
+    parser.add_argument("--batch_size", type=int, default=5)
     parser.add_argument("--cuda_device",type=str,default= "5,6")
     return parser.parse_args()
     
@@ -89,6 +89,13 @@ def main() -> None:
 
     for rnd in tqdm(range(N_ROUNDS)):
         
+        if rnd == 0:
+            in_path = Path(args.seed_tasks_path)
+            id_name = "id"
+        else:
+            Path(f"{args.output_dir}evol_instruct_round{rnd}.jsonl")
+            id_name  = "seed_id"
+        
         in_path = Path(args.seed_tasks_path) if rnd == 0 else Path(f"{args.output_dir}evol_instruct_round{rnd}.jsonl")
         out_path = Path(os.path.join(args.output_dir, f"evol_instruct_round{rnd+1}.jsonl"))
         
@@ -98,12 +105,12 @@ def main() -> None:
 
         for obj in tqdm(iter_jsonl(in_path)):
             src_instruction = obj["instruction"].strip()
-            seed_id = obj["id"]
+            seed_id = id_name
             
             meta_prompt = encode_prompt(src_instruction,tokenizer)
 
             evol_prompts.append(meta_prompt)
-            meta_buf.append({"src_id": seed_id, "src_instruction": src_instruction})
+            meta_buf.append({"src_id": obj[seed_id], "src_instruction": src_instruction})
 
             if len(evol_prompts) >= args.batch_size:
                 batch_cnt += 1
