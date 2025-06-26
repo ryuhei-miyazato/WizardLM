@@ -14,7 +14,7 @@ from tqdm import tqdm
 from transformers import AutoModelForCausalLM, AutoTokenizer, TextStreamer
 
 random.seed(42)
-N_ROUNDS = 5
+N_ROUNDS = 4
 
 def initialize_models(model_name):
     model = AutoModelForCausalLM.from_pretrained(
